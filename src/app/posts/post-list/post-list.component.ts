@@ -1,5 +1,7 @@
-import { Component, Input } from "../../../../node_modules/@angular/core";
+import { Component, Input, OnInit, OnDestroy } from "../../../../node_modules/@angular/core";
 import { Post } from "../post.model";
+import { PostsService } from "../posts.service";
+import { Subscription } from "../../../../node_modules/rxjs";
 
 
 @Component({
@@ -7,14 +9,28 @@ import { Post } from "../post.model";
     templateUrl: './post-list.component.html',
     styleUrls: ['./post-list.component.css']
 })
-export class PostListComponent {
+export class PostListComponent implements OnInit, OnDestroy {
 
-    // posts = [
-    //     {title: 'The first post', content: 'The first post content'},
-    //     {title: 'The second post', content: 'The second post content'},
-    //     {title: 'The third post', content: 'The third post content'},
-    // ];
+    // @Input() posts: Post[] = []; 
+   
+    posts: Post[] = [];
+    postsSub: Subscription;
 
-    @Input() posts: Post[] = [];
+    constructor(public postsService: PostsService) {
+    }
+
+    ngOnInit() {
+        this.posts = this.postsService.getPosts();
+        this.postsSub = this.postsService.getPostUpdateListener()
+        .subscribe((posts: Post[] ) => {
+            this.posts = posts;
+        })
+    }
+
+    ngOnDestroy() { 
+        //Como é singlepage, esse componente sempre ficará ouvindo, mesmo que nao esteja no DOM,
+        // Por isso é bom remover o subscribe ao sair da pagina
+        this.postsSub.unsubscribe();
+    }
 
 }

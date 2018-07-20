@@ -3,8 +3,11 @@
   <!-- Aqui, ocorre a relação do Output e do Input -->
   <!-- O postCreated (variável que está com o decorator, manda um $event, que é o dado que vem do filho 
     (neste caso, um post) e o coloca como argumento de uma função que está no componente "pai" (onAddedPost) -->
-<app-post-create (postCreated)="onAddedPost($event)"></app-post-create>
+<!-- <app-post-create (postCreated)="onAddedPost($event)"></app-post-create> -->
 <!-- Esse post é adicionado a uma lista (storedPosts), no componente que utiliza os selectors (app.component) -->
-<app-post-list [posts]="storedPosts"></app-post-list>
+<!-- <app-post-list [posts]="storedPosts"></app-post-list> -->
 <!-- E, como o array "posts", está com o decorator input, ele recebe o storedPosts do "pai" -->
+
+<app-post-create></app-post-create>
+<app-post-list></app-post-list>
 </main>
