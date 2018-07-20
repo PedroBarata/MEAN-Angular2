@@ -1,14 +1,14 @@
 <mat-card>
     <form #postForm="ngForm" (submit)="onAddPost(postForm)" novalidate>
         <mat-form-field>
-            <input matInput name="title" ngModel #title="ngModel" required>
+            <input matInput name="title" ngModel #title="ngModel" placeholder="Post title" required>
             <mat-error *ngIf="title.invalid">Required</mat-error>
         </mat-form-field>
         <mat-form-field>
-            <textarea matInput rows="4" name="content" ngModel #content="ngModel" required></textarea>
+            <textarea matInput rows="4" name="content" ngModel placeholder="Post title" #content="ngModel" required></textarea>
             <mat-error *ngIf="content.invalid">Required</mat-error>
         </mat-form-field>
-        <button mat-raised-button color="accent" [disabled]="postForm.invalid" type="submit">Send Post
+        <button mat-raised-button color="accent" type="submit">Send Post
         </button>
     </form>
 </mat-card>
