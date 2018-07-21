@@ -11,8 +11,8 @@ import { Subscription } from "../../../../node_modules/rxjs";
 })
 export class PostListComponent implements OnInit, OnDestroy {
 
-    // @Input() posts: Post[] = []; 
-   
+    // @Input() posts: Post[] = [];
+
     posts: Post[] = [];
     postsSub: Subscription;
 
@@ -20,14 +20,14 @@ export class PostListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.posts = this.postsService.getPosts();
+        this.postsService.getPosts();
         this.postsSub = this.postsService.getPostUpdateListener()
         .subscribe((posts: Post[] ) => {
             this.posts = posts;
         })
     }
 
-    ngOnDestroy() { 
+    ngOnDestroy() {
         //Como é singlepage, esse componente sempre ficará ouvindo, mesmo que nao esteja no DOM,
         // Por isso é bom remover o subscribe ao sair da pagina
         this.postsSub.unsubscribe();
