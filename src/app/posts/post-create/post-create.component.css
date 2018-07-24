@@ -6,3 +6,6 @@ button {
     width: 100%;
     display: block;
 }
+mat-spinner {
+  margin: auto;
+}

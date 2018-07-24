@@ -2,9 +2,24 @@ const express = require("express");
 
 const bodyParser = require("body-parser");
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false})); //Para mostrar que o body-parser aceita vários tipos de requests.
 
+const postsRoutes = require("./routes/posts");
+
+const mongoose = require("mongoose");
+
+mongoose
+  .connect(
+    "mongodb+srv://pedro:VjYbvzf8A2ifwhXC@meanstackmax-ggarw.mongodb.net/node-angular?retryWrites=true"
+  )
+  .then(() => {
+    console.log("Successfully connected!");
+  })
+  .catch(() => {
+    console.log("Error in connection!");
+  });
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false })); //Para mostrar que o body-parser aceita vários tipos de requests.
 
 app.use((req, res, next) => {
   /* Precisa setar os HEADERS por segurança do backend (CORS ERROR),
@@ -22,31 +37,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post("/api/posts", (req, res, next) => {
-  const post = req.body;
-  console.log(post);
-  return res.status(201).json({
-    message: "Post added successfully!"
-  });
-});
+app.use("/api/posts", postsRoutes);
 
-app.use("/api/posts", (req, res, next) => {
-  let posts = [
-    {
-      id: "asdas2323123",
-      title: "First server-side post",
-      content: "This is coming from the server"
-    },
-    {
-      id: "wjqehwiqu12",
-      title: "Second server-side post",
-      content: "This is coming from the server"
-    }
-  ];
-  res.status(200).json({
-    message: "Post fecthed successfully!",
-    posts: posts
-  });
-});
 
 module.exports = app;
