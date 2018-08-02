@@ -37,16 +37,24 @@ export class PostsService {
     );
   }
 
-  addPost(title: string, content: string) {
-    let post = { id: null, title: title, content: content };
+  addPost(title: string, content: string, image: File) {
+    const postData = new FormData(); //Formato que aceita strings e blobs (arquivos)
+    postData.append("title", title);
+    postData.append("content", content);
+    postData.append("image", image); //Tem que ser o mesmo nome que está no multer, no node
     this.http
       .post<{ message: string; postId: string }>(
         "http://localhost:3000/api/posts",
-        post
+        postData
       )
       .subscribe(responseData => {
-        const id = responseData.postId;
-        post.id = id; //Pode se passar diretamente, pois não estamos referenciando um objeto, e sim a PROPRIEDADE (dando um overload na propriedade)
+        const post: Post = {
+          id: responseData.postId,
+          title: title,
+          content: content
+        };
+        //const id = responseData.postId;
+        //post.id = id; //Pode se passar diretamente, pois não estamos referenciando um objeto, e sim a PROPRIEDADE (dando um overload na propriedade)
         this.posts.push(post); //Não tem necessidade de duplicá-lo pois vem do servidor, não vai ser modificado
         this.postsUpdated.next([...this.posts]); //Copia um array para um novo, sem mexer no array original (boa prática)
         this.router.navigate(["/"]);
