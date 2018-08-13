@@ -20,7 +20,8 @@ export class PostsService {
             return {
               title: post.title,
               content: post.content,
-              id: post._id
+              id: post._id,
+              imagePath: post.imagePath
             };
           });
         })
@@ -43,15 +44,16 @@ export class PostsService {
     postData.append("content", content);
     postData.append("image", image); //Tem que ser o mesmo nome que está no multer, no node
     this.http
-      .post<{ message: string; postId: string }>(
+      .post<{ message: string; post: Post }>(
         "http://localhost:3000/api/posts",
         postData
       )
       .subscribe(responseData => {
         const post: Post = {
-          id: responseData.postId,
+          id: responseData.post.id,
           title: title,
-          content: content
+          content: content,
+          imagePath: responseData.post.imagePath
         };
         //const id = responseData.postId;
         //post.id = id; //Pode se passar diretamente, pois não estamos referenciando um objeto, e sim a PROPRIEDADE (dando um overload na propriedade)
@@ -62,7 +64,7 @@ export class PostsService {
   }
 
   updatePost(idPost: string, title: string, content: string) {
-    let post = { id: idPost, title: title, content: content };
+    let post = { id: idPost, title: title, content: content, imagePath: null };
     this.http
       .put("http://localhost:3000/api/posts/" + idPost, post)
       .subscribe(response => {

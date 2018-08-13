@@ -1,5 +1,5 @@
 const express = require("express");
-
+const path = require("path");
 const bodyParser = require("body-parser");
 const app = express();
 
@@ -20,6 +20,7 @@ mongoose
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); //Para mostrar que o body-parser aceita vários tipos de requests.
+app.use("/images", express.static(path.join("backend/images/")));
 
 app.use((req, res, next) => {
   /* Precisa setar os HEADERS por segurança do backend (CORS ERROR),
