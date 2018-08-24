@@ -1,5 +1,5 @@
 import { AbstractControl } from "../../../../node_modules/@angular/forms";
-import { Observable, Observer } from "../../../../node_modules/rxjs";
+import { Observable, Observer, of } from "../../../../node_modules/rxjs";
 
 export const mimeType = (
   control: AbstractControl
@@ -7,6 +7,12 @@ export const mimeType = (
   const file = control.value as File;
   const fileReader = new FileReader();
   const fileReaderObs = Observable.create((observer: Observer<{[key: string]: any}>) => {
+    if(typeof(control.value) === 'string') {
+      return of(null);
+      //(of) é uma forma rápida de retornar um observable que emite o dado imediatamente,
+      //retornando null, significa válido
+    }
+
     /* Não foi usado o loadend direto porque necessitamos de algumas funções extras que o
     / addEventListener tem. */
     fileReader.addEventListener("loadend", () => {

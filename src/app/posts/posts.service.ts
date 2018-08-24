@@ -33,7 +33,7 @@ export class PostsService {
   }
 
   getPost(id: string) {
-    return this.http.get<{ _id: string; title: string; content: string }>(
+    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(
       "http://localhost:3000/api/posts/" + id
     );
   }
@@ -63,13 +63,34 @@ export class PostsService {
       });
   }
 
-  updatePost(idPost: string, title: string, content: string) {
-    let post = { id: idPost, title: title, content: content, imagePath: null };
+  updatePost(idPost: string, title: string, content: string, image: File | string) {
+    let postData: Post | FormData;
+    if(typeof(image) === 'object') {
+      postData = new FormData();
+      postData.append("id", idPost);
+      postData.append("title", title);
+      postData.append("content", content);
+      postData.append("image", image, title);
+
+    } else {
+      postData = {
+        id: idPost,
+        title: title,
+        content: content,
+        imagePath: image
+      };
+    }
     this.http
-      .put("http://localhost:3000/api/posts/" + idPost, post)
+      .put("http://localhost:3000/api/posts/" + idPost, postData)
       .subscribe(response => {
         const updatedPosts = [...this.posts];
-        const oldPostIndex = updatedPosts.findIndex(p => p.id === post.id);
+        const oldPostIndex = updatedPosts.findIndex(p => p.id === idPost);
+        const post: Post = {
+          id: idPost,
+          title: title,
+          content: content,
+          imagePath: response.imagePath
+        }
         updatedPosts[oldPostIndex] = post;
         this.posts = updatedPosts;
         this.postsUpdated.next([...this.posts]);
