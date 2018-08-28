@@ -8,34 +8,46 @@ import { Router } from "../../../node_modules/@angular/router";
 //Ao inves de colocar no app.module, providers, pode-se declarar um escaneamento de serviços dessa forma
 export class PostsService {
   private posts: Post[] = [];
-  private postsUpdated = new Subject<Post[]>();
+  private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
-  getPosts() {
+  getPosts(postsPerPage: number, currentPage: number) {
+    const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
     this.http
-      .get<{ message: string; posts: any }>("http://localhost:3000/api/posts")
+      .get<{ message: string; posts: any; maxPosts: number }>(
+        "http://localhost:3000/api/posts" + queryParams
+      )
       .pipe(
         map(postData => {
-          return postData.posts.map(post => {
-            return {
-              title: post.title,
-              content: post.content,
-              id: post._id,
-              imagePath: post.imagePath
-            };
-          });
+          return {
+            posts: postData.posts.map(post => {
+              return {
+                title: post.title,
+                content: post.content,
+                id: post._id,
+                imagePath: post.imagePath
+              };
+            }),
+            maxPosts: postData.maxPosts
+          };
         })
       )
-      .subscribe(transformedPosts => {
-        this.posts = transformedPosts; //Não tem necessidade de duplicá-lo pois vem do servidor, não vai ser modificado
-        this.postsUpdated.next([...this.posts]); //Copia um array para um novo, sem mexer no array original (boa prática)
+      .subscribe(transformedPostsData => {
+        this.posts = transformedPostsData.posts; //Não tem necessidade de duplicá-lo pois vem do servidor, não vai ser modificado
+        this.postsUpdated.next({
+          posts: [...this.posts],
+          postCount: transformedPostsData.maxPosts
+        }); //Copia um array para um novo, sem mexer no array original (boa prática)
       });
   }
 
   getPost(id: string) {
-    return this.http.get<{ _id: string, title: string, content: string, imagePath: string }>(
-      "http://localhost:3000/api/posts/" + id
-    );
+    return this.http.get<{
+      _id: string;
+      title: string;
+      content: string;
+      imagePath: string;
+    }>("http://localhost:3000/api/posts/" + id);
   }
 
   addPost(title: string, content: string, image: File) {
@@ -49,7 +61,8 @@ export class PostsService {
         postData
       )
       .subscribe(responseData => {
-        const post: Post = {
+      //Não precisa mais dessa parte comentada em /* */ pois a lista será sempre atualizada assim que acontecer alguma coisa com ela!
+      /*   const post: Post = {
           id: responseData.post.id,
           title: title,
           content: content,
@@ -59,19 +72,23 @@ export class PostsService {
         //post.id = id; //Pode se passar diretamente, pois não estamos referenciando um objeto, e sim a PROPRIEDADE (dando um overload na propriedade)
         this.posts.push(post); //Não tem necessidade de duplicá-lo pois vem do servidor, não vai ser modificado
         this.postsUpdated.next([...this.posts]); //Copia um array para um novo, sem mexer no array original (boa prática)
-        this.router.navigate(["/"]);
+        */ this.router.navigate(["/"]);
       });
   }
 
-  updatePost(idPost: string, title: string, content: string, image: File | string) {
+  updatePost(
+    idPost: string,
+    title: string,
+    content: string,
+    image: File | string
+  ) {
     let postData: Post | FormData;
-    if(typeof(image) === 'object') {
+    if (typeof image === "object") {
       postData = new FormData();
       postData.append("id", idPost);
       postData.append("title", title);
       postData.append("content", content);
       postData.append("image", image, title);
-
     } else {
       postData = {
         id: idPost,
@@ -83,31 +100,34 @@ export class PostsService {
     this.http
       .put("http://localhost:3000/api/posts/" + idPost, postData)
       .subscribe(response => {
-        const updatedPosts = [...this.posts];
+        //Aqui também!
+        /* const updatedPosts = [...this.posts];
         const oldPostIndex = updatedPosts.findIndex(p => p.id === idPost);
         const post: Post = {
           id: idPost,
           title: title,
           content: content,
-          imagePath: response.imagePath
-        }
+          imagePath: ""
+        };
         updatedPosts[oldPostIndex] = post;
         this.posts = updatedPosts;
-        this.postsUpdated.next([...this.posts]);
+        this.postsUpdated.next([...this.posts]); */
         this.router.navigate(["/"]);
       });
   }
 
   deletePost(idPost: string) {
-    this.http
-      .delete("http://localhost:3000/api/posts/" + idPost)
-      .subscribe(() => {
+      //Aqui também!
+    return this.http
+      .delete("http://localhost:3000/api/posts/" + idPost);
+      // .subscribe(() => {
+
         /* Dentro da condição, o que for falso não vai entrar no novo array (postsUpdated), onde
         no nosso caso, a condição é o id ser diferente do id do post que foi excluído. */
-        const updatedPosts = this.posts.filter(post => post.id !== idPost);
+/*         const updatedPosts = this.posts.filter(post => post.id !== idPost);
         this.posts = updatedPosts;
-        this.postsUpdated.next([...this.posts]);
-      });
+        this.postsUpdated.next([...this.posts]); */
+      // });
   }
 
   getPostUpdateListener() {

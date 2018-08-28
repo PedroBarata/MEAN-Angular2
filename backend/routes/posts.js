@@ -61,9 +61,10 @@ router.put(
   multer({ storage: storage }).single("image"),
   (req, res, next) => {
     let imagePath = req.body.imagePath;
-    if(req.file) { //Se for undefined, é uma string
+    if (req.file) {
+      //Se for undefined, é uma string
       const url = req.protocol + "://" + req.get("host");
-      imagePath = url + "/images/" + req.file.filename
+      imagePath = url + "/images/" + req.file.filename;
     }
     const post = new Post({
       _id: req.body.id,
@@ -93,12 +94,25 @@ router.get("/:id", (req, res, next) => {
 });
 
 router.get("", (req, res, next) => {
-  Post.find().then(documents => {
-    res.status(200).json({
-      message: "Post fecthed successfully!",
-      posts: documents
+  const pageSize = +req.query.pagesize; //Nomes arbitrários, Tem que ser numerico, por isso o "+"
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  let fetchedPosts;
+  if (pageSize && currentPage) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
+  }
+  postQuery
+    .then(documents => {
+      fetchedPosts = documents;
+      return Post.count();
+    })
+    .then(count => {
+      res.status(200).json({
+        message: "Post fecthed successfully!",
+        posts: fetchedPosts,
+        maxPosts: count
+      });
     });
-  });
 });
 
 router.delete("/:id", (req, res, next) => {
