@@ -48,7 +48,7 @@ router.post("/login", (req, res, next) => {
     })
     .then(result => {
       if (!result) {
-        return res.status(404).json({
+        return res.status(401).json({
           message: "Auth failed"
         });
       }
@@ -65,7 +65,7 @@ router.post("/login", (req, res, next) => {
     })
     .catch(err => {
       console.log(err);
-      return res.status(404).json({
+      return res.status(401).json({
         message: "Auth failed"
       });
     });
