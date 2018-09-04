@@ -57,10 +57,9 @@ router.post("/login", (req, res, next) => {
         "O_secret_deve_ser_o_mais_longo_possivel!",
         {expiresIn: "1h"} //Nao deve durar muito tempo, pois é bom ficar atualizando o token para o sistema nao ser suscetível a ataques
       );
-      console.log(token);
-
       res.status(200).json({
-        token: token
+        token: token,
+        expiresIn: 3600
       });
     })
     .catch(err => {
