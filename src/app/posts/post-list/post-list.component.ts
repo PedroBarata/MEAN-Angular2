@@ -25,6 +25,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
   userIsAuthenticated = false;
+  userId: string;
   private postsSub: Subscription;
   private authStatusSub: Subscription;
   constructor(
@@ -34,6 +35,7 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.isLoading = true;
+    this.userId = this.authService.getUserId();
     this.postsService.getPosts(this.postsPerPage, this.currentPage);
     this.postsSub = this.postsService
       .getPostUpdateListener()
@@ -43,16 +45,15 @@ export class PostListComponent implements OnInit, OnDestroy {
         this.totalPosts = postData.postCount;
       });
     this.userIsAuthenticated = this.authService.getIsAuth();
-    console.log( this.userIsAuthenticated);
     /* Foi criado esse serviço "a mais" pq o componente "post" é chamado apenas APÓS o login,
     logo, ele não consegue obter a informação de que o booleano do isAuth mudou. Isso significa
     que não está sendo passada a nova informação para o subscribe aqui. Só são enviadas novas informações */
     this.authStatusSub = this.authService
       .getAuthListener()
       .subscribe(isAuthenticated => {
-        console.log(isAuthenticated);
-
         this.userIsAuthenticated = isAuthenticated;
+        this.userId = this.authService.getUserId();
+
       });
   }
 
