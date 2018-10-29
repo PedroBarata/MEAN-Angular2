@@ -1,6 +1,5 @@
 import {
   Component,
-  Input,
   OnInit,
   OnDestroy
 } from "../../../../node_modules/@angular/core";
@@ -53,7 +52,6 @@ export class PostListComponent implements OnInit, OnDestroy {
       .subscribe(isAuthenticated => {
         this.userIsAuthenticated = isAuthenticated;
         this.userId = this.authService.getUserId();
-
       });
   }
 
@@ -66,9 +64,14 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   onDelete(idPost: string) {
     this.isLoading = true;
-    this.postsService.deletePost(idPost).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    });
+    this.postsService.deletePost(idPost).subscribe(
+      () => {
+        this.postsService.getPosts(this.postsPerPage, this.currentPage);
+      },
+      () => {
+        this.isLoading = false;
+      }
+    );
   }
 
   ngOnDestroy() {

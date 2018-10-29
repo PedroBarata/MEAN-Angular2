@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import {
   FormGroup,
   FormControl,
@@ -11,13 +11,15 @@ import {
 } from "../../../../node_modules/@angular/router";
 import { Post } from "../post.model";
 import { mimeType } from "./mime-type.validator";
+import { Subscription } from "rxjs";
+import { AuthService } from "../../auth/auth.service";
 
 @Component({
   selector: "app-post-create",
   templateUrl: "post-create.component.html",
   styleUrls: ["post-create.component.css"]
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
   //Usa o decorator @Output para dizer que essa variavel vai ser "exportada"
   // @Output() postCreated = new EventEmitter<Post>();
 
@@ -37,13 +39,20 @@ export class PostCreateComponent implements OnInit {
   form: FormGroup;
   isLoading = false;
   imagePreview: string | ArrayBuffer;
+  private authStatusSub: Subscription;
 
   constructor(
     public postsService: PostsService,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    public authService: AuthService
   ) {}
 
   ngOnInit() {
+    this.authStatusSub = this.authService.getAuthListener().subscribe(
+      authStatus => {
+        this.isLoading = false;
+      }
+    );
     this.form = new FormGroup({
       title: new FormControl(null, {
         validators: [Validators.required, Validators.minLength(3)]
@@ -113,5 +122,9 @@ export class PostCreateComponent implements OnInit {
       );
     }
     this.form.reset();
+  }
+
+  ngOnDestroy() {
+    this.authStatusSub.unsubscribe();
   }
 }

@@ -27,7 +27,7 @@ router.post("/signup", (req, res, next) => {
       })
       .catch(err => {
         res.status(500).json({
-          message: err
+          message: "Invalid User Credentials!"
         });
       });
   });
@@ -55,7 +55,7 @@ router.post("/login", (req, res, next) => {
       const token = jwt.sign(
         { email: fetchedUser.email, userId: fetchedUser._id }, //E aqui se usa o fetchedUser ao inves do user
         "O_secret_deve_ser_o_mais_longo_possivel!",
-        {expiresIn: "1h"} //Nao deve durar muito tempo, pois é bom ficar atualizando o token para o sistema nao ser suscetível a ataques
+        { expiresIn: "1h" } //Nao deve durar muito tempo, pois é bom ficar atualizando o token para o sistema nao ser suscetível a ataques
       );
       res.status(200).json({
         token: token,
@@ -66,7 +66,7 @@ router.post("/login", (req, res, next) => {
     .catch(err => {
       console.log(err);
       return res.status(401).json({
-        message: "Auth failed"
+        message: "Invalid authentication Credentials!"
       });
     });
 });
