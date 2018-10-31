@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
     const token = req.headers.authorization.split(" ")[1]; //Com isso, pegamos tudo após o " "
     /* Todo middleware pode ter sua requisição mudada (adicionando um novo campo),
     o jwt.verify também decodifica o token, e, por isso, vamos armazenar numa variável da requisição*/
-    const decodedToken = jwt.verify(token, "O_secret_deve_ser_o_mais_longo_possivel!");
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
     req.userData = { email: decodedToken.email, userId: decodedToken.userId };
     next();
   } catch (error) {

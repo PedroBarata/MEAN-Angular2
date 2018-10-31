@@ -10,7 +10,9 @@ const mongoose = require("mongoose");
 
 mongoose
   .connect(
-    "mongodb+srv://pedro:VjYbvzf8A2ifwhXC@meanstackmax-ggarw.mongodb.net/node-angular"
+    "mongodb+srv://pedro:" +
+      process.env.MONGO_ATLAS_PW +
+      "@meanstackmax-ggarw.mongodb.net/node-angular"
   )
   .then(() => {
     console.log("Successfully connected!");

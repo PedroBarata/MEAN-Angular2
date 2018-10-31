@@ -52,7 +52,7 @@ exports.userLogin = (req, res, next) => {
       }
       const token = jwt.sign(
         { email: fetchedUser.email, userId: fetchedUser._id }, //E aqui se usa o fetchedUser ao inves do user
-        "O_secret_deve_ser_o_mais_longo_possivel!",
+        process.env.JWT_KEY, /* Usa-se o nodemon.json (arquivo onde ficam localizadas as variaveis globais do nodemon) dessa forma! */
         { expiresIn: "1h" } //Nao deve durar muito tempo, pois é bom ficar atualizando o token para o sistema nao ser suscetível a ataques
       );
       res.status(200).json({

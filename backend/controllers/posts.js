@@ -39,7 +39,9 @@ exports.updatePost = (req, res, next) => {
     creator: req.userData.userId
   });
   Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post).then(result => {
-    if(result.nModified > 0) {/* Quer dizer que um objeto foi modificado */
+    // if(result.nModified > 0) {/* Quer dizer que um objeto foi modificado */
+    if(result.n > 0) { /* Quer dizer que ele encontrou um objeto com essas características,
+                        Mas, no caso de não ter sido modificado e salvado, necessita de usar o "n" */
       res.status(200).json({
         message: "Updated successfully!"
       });
